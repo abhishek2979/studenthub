@@ -11,9 +11,13 @@ connectDB();
 const app = express();
 
 // ── CORS ──────────────────────────────────────────────────────────────────
+const cors = require('cors');
+
 app.use(cors({
- origin: [process.env.CLIENT_URL || 'http://localhost:5173', 'http://localhost:3000', 'https://studenthub-psi.vercel.app'],
-  credentials: true,
+  origin: 'https://studenthub-psi.vercel.app', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true 
 }));
 
 // ── Body Parser ───────────────────────────────────────────────────────────
