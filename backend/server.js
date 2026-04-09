@@ -5,51 +5,45 @@ const rateLimit   = require('express-rate-limit');
 const connectDB   = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
-// Connect to MongoDB
 connectDB();
 
 const app = express();
 
-// ── CORS ──────────────────────────────────────────────────────────────────
-const corsOptions = {
-  origin: 'https://studenthub-psi.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+// ── CORS (manual headers — most reliable) ────────────────────────────────
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://studenthub-psi.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
 
-// ── Body Parser ───────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// ── Rate Limiting ─────────────────────────────────────────────────────────
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 min
+  windowMs: 15 * 60 * 1000,
   max: 20,
   skip: (req) => req.method === 'OPTIONS',
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 const apiLimiter = rateLimit({
-  skip: (req) => req.method === 'OPTIONS',
   windowMs: 15 * 60 * 1000,
   max: 200,
+  skip: (req) => req.method === 'OPTIONS',
 });
 
 app.use('/api/auth', authLimiter);
 app.use('/api',      apiLimiter);
 
-// ── Health Check ──────────────────────────────────────────────────────────
 app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date().toISOString() }));
 
-// ── Routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth',       require('./routes/auth'));
 app.use('/api/students',   require('./routes/students'));
 app.use('/api/attendance', require('./routes/attendance'));
 app.use('/api/results',    require('./routes/results'));
 
-// ── Error Handlers ────────────────────────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
 
