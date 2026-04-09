@@ -11,12 +11,14 @@ connectDB();
 const app = express();
 
 // ── CORS ──────────────────────────────────────────────────────────────────
-app.use(cors({
-  origin: 'https://studenthub-psi.vercel.app', 
+const corsOptions = {
+  origin: 'https://studenthub-psi.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true 
-}));
+  credentials: true,
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // ── Body Parser ───────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
@@ -26,9 +28,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 min
   max: 20,
+  skip: (req) => req.method === 'OPTIONS',
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 const apiLimiter = rateLimit({
+  skip: (req) => req.method === 'OPTIONS',
   windowMs: 15 * 60 * 1000,
   max: 200,
 });
