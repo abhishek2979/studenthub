@@ -12,7 +12,7 @@ const app = express();
 
 // ── CORS ──────────────────────────────────────────────────────────────────
 // const cors = require('cors');
-app.options('*', cors());
+// app.options('*', cors());
 
 app.use(cors({
   origin: 'https://studenthub-psi.vercel.app', 
