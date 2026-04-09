@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
- baseURL: 'https://studenthub-wv5c.onrender.com/api',
-  timeout: 15000,
+    baseURL: 'https://studenthub-wv5c.onrender.com/api',
+    timeout: 15000,
+    withCredentials: true
 });
 
 api.interceptors.request.use(config => {
