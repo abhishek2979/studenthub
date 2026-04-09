@@ -11,7 +11,8 @@ connectDB();
 const app = express();
 
 // ── CORS ──────────────────────────────────────────────────────────────────
-const cors = require('cors');
+// const cors = require('cors');
+app.options('*', cors());
 
 app.use(cors({
   origin: 'https://studenthub-psi.vercel.app', 
