@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
- baseURL: 'https://studenthub-wv5c.onrender.com/api',,
+ baseURL: 'https://studenthub-wv5c.onrender.com/api',
   timeout: 15000,
 });
 
