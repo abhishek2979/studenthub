@@ -10,27 +10,14 @@ connectDB();
 const app = express();
 
 // ── CORS (manual headers — most reliable) ────────────────────────────────
-const cors = require("cors");
-
-const allowedOrigins = [
-  "https://studenthub-psi.vercel.app",
-  "http://localhost:5173",
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("CORS blocked: " + origin));
-      }
-    },
-    credentials: true,
-  })
-);
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://studenthub-psi.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
